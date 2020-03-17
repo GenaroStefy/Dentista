@@ -162,9 +162,9 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(437, 205);
+            this.button5.Location = new System.Drawing.Point(437, 195);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(112, 25);
+            this.button5.Size = new System.Drawing.Size(112, 44);
             this.button5.TabIndex = 14;
             this.button5.Text = "Buscar en archivos";
             this.button5.UseVisualStyleBackColor = true;
@@ -172,19 +172,19 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(577, 205);
+            this.button6.Location = new System.Drawing.Point(580, 195);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(112, 25);
+            this.button6.Size = new System.Drawing.Size(112, 44);
             this.button6.TabIndex = 15;
-            this.button6.Text = "Subir imagen";
+            this.button6.Text = "Agregar imagen al paciente";
             this.button6.UseVisualStyleBackColor = true;
             this.button6.Click += new System.EventHandler(this.Button6_Click);
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(718, 205);
+            this.button7.Location = new System.Drawing.Point(718, 195);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(137, 36);
+            this.button7.Size = new System.Drawing.Size(137, 44);
             this.button7.TabIndex = 16;
             this.button7.Text = "Buscar imagen en la nube";
             this.button7.UseVisualStyleBackColor = true;

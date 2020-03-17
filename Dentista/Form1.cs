@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -20,13 +21,15 @@ namespace Dentista
     public partial class Form1 : Form
     {
         IFirebaseClient client;
+        List<string> imagenes = new List<string>();
 
         IFirebaseConfig config = new FirebaseConfig
         {
             AuthSecret = "xL72WVNg3zNeNfkWo2aQ7WRX4Nxhjqe1mbtCNru7",
             BasePath = "https://dentista-99f4c.firebaseio.com/"
-        }; 
+        };
 
+        
 
 
 
@@ -45,16 +48,23 @@ namespace Dentista
             }
         }
 
+        public void AgregarImagenes()
+        {
+            
+        }
+
         private async void Button1_Click(object sender, EventArgs e)
         {
-            var data = new Data {
+            var data = new Data
+            {
                 Id = textBoxId.Text,
-                Name = textBoxEdad.Text,
+                Name = textBoxNombre.Text,
                 Address = textBoxDireccion.Text,
-                Age = textBoxNombre.Text
-                };
+                Age = textBoxEdad.Text,
+                Img = imagenes
+        };
 
-            SetResponse response = await client.SetTaskAsync("Cliente/" + textBoxId.Text,data);
+            SetResponse response = await client.SetTaskAsync("Cliente/" + textBoxId.Text ,data);
             Data result = response.ResultAs<Data>();
 
             MessageBox.Show("Insertado correctamente " + result.Name);
@@ -100,6 +110,7 @@ namespace Dentista
                 Name = textBoxEdad.Text,
                 Address = textBoxDireccion.Text,
                 Age = textBoxNombre.Text
+
             };
 
             FirebaseResponse response = await client.UpdateTaskAsync("Cliente/" + textBoxId.Text, data);
@@ -115,9 +126,9 @@ namespace Dentista
             MessageBox.Show("Registro eliminado correctamente");    
         }
 
-        private async void Button6_Click(object sender, EventArgs e)
+        private void Button6_Click(object sender, EventArgs e)
         {
-            MemoryStream ms = new MemoryStream();
+            /*MemoryStream ms = new MemoryStream();
             imageBox.Image.Save(ms, ImageFormat.Jpeg);
 
             byte [] a = ms.GetBuffer();
@@ -134,7 +145,18 @@ namespace Dentista
 
             MessageBox.Show("Se inserto la imagen correctamente");
 
-            imageBox.Image = null;
+            imageBox.Image = null;*/
+
+            /*MemoryStream ms = new MemoryStream();
+
+            imageBox.Image.Save(ms, ImageFormat.Jpeg);
+
+            byte[] a = ms.GetBuffer();
+
+            string output = Convert.ToBase64String(a);
+
+            imagenes.Add(output);
+            */
 
         }
 
@@ -167,12 +189,20 @@ namespace Dentista
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = "Selecciona la imagen";
             ofd.Filter = "Image files(*.jpg) | *.jpg";
+            ofd.Multiselect = true;
 
-            if(ofd.ShowDialog() == DialogResult.OK)
+            if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Image img = new Bitmap(ofd.FileName);
-                imageBox.Image = img.GetThumbnailImage(424, 152, null, new IntPtr());
+                foreach (String file in ofd.FileNames)
+                {
+                    Image img = new Bitmap(ofd.FileName);
+                    imagenes.Add(file);
+                    //imageBox.Image = img.GetThumbnailImage(424, 152, null, new IntPtr());
+
+                }
+
             }
+
         }
-    }
+     }
 }
