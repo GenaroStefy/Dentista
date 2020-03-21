@@ -25,6 +25,8 @@ namespace Dentista
         List<string> imagenes = new List<string>();
         List<string> imagenes2 = new List<string>();
 
+        int cont = 0;
+
         IFirebaseConfig config = new FirebaseConfig
         {
             AuthSecret = "xL72WVNg3zNeNfkWo2aQ7WRX4Nxhjqe1mbtCNru7",
@@ -44,8 +46,14 @@ namespace Dentista
 
             if (client != null)
             {
-                //MessageBox.Show("Conexion establecida");
+                MessageBox.Show("Conexion establecida");
             }
+
+            //Lista de imagenes
+            listView1.View = View.Details;
+
+            listView1.Columns.Add("Imagen",150);
+            listView1.AutoResizeColumn(0, ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
         public void AgregarImagenes()
@@ -55,22 +63,32 @@ namespace Dentista
 
         private async void Button1_Click(object sender, EventArgs e)
         {
-            var data = new Data
+            try
             {
-                Id = textBoxId.Text,
-                Name = textBoxNombre.Text,
-                Address = textBoxDireccion.Text,
-                Age = textBoxEdad.Text,
-                Img = imagenes
-            };
+                var data = new Data
+                {
+                    Id = textBoxId.Text,
+                    Name = textBoxNombre.Text,
+                    Address = textBoxDireccion.Text,
+                    Age = textBoxEdad.Text,
+                    Img = imagenes
+                };
 
-            SetResponse response = await client.SetTaskAsync("Cliente/" + textBoxId.Text, data);
-            Data result = response.ResultAs<Data>();
+                SetResponse response = await client.SetTaskAsync("Cliente/" + textBoxId.Text, data);
 
-            MessageBox.Show("Insertado correctamente " + result.Name);
+                if (data.Img != null)
+                {
 
-            DataGridView dgv = new DataGridView();
+                }
 
+                Data result = response.ResultAs<Data>();
+
+                MessageBox.Show("Insertado correctamente " + result.Name);               
+            }
+            catch(Exception w)
+            {
+                MessageBox.Show("No insertado");
+            }
 
 
         }
@@ -193,13 +211,14 @@ namespace Dentista
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Title = "Selecciona la(s) imagen(es)";
             ofd.Filter = "Image files(*.jpg) | *.jpg";
+            ofd.FilterIndex = 10;
             ofd.Multiselect = true;
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 foreach (String file in ofd.FileNames)
                 {
-                    Image img = new Bitmap(ofd.FileName);
+                    Image img = new Bitmap(file);
                     MemoryStream ms = new MemoryStream();
 
                     img.Save(ms, ImageFormat.Jpeg);
@@ -207,8 +226,12 @@ namespace Dentista
                     byte[] a = ms.GetBuffer();
 
                     string output = Convert.ToBase64String(a);
+                    Console.WriteLine(output);
+
+                    //output = file;
 
                     imagenes.Add(output);
+                    //cont++;
                     //imagenes.Add(file);
                     //imageBox.Image = img.GetThumbnailImage(424, 152, null, new IntPtr());
 
@@ -219,9 +242,11 @@ namespace Dentista
 
         }
         private async void TraerImagenes()
-        {
-            int cont = 0;
+        {            
+            ImageList imgs = new ImageList();
+            imgs.ImageSize = new Size(100, 100);
 
+            
             FirebaseResponse response = await client.GetTaskAsync("Cliente/" + textBoxId.Text);
 
             try
@@ -234,9 +259,9 @@ namespace Dentista
                     textBoxEdad.Text = obj.Name;
                     textBoxDireccion.Text = obj.Address;
                     textBoxNombre.Text = obj.Age;
-                    imagenes = obj.Img;
+                    imagenes = obj.Img;                    
 
-                     foreach(string i in imagenes)
+                    foreach (string i in imagenes)
                         {
                                                                     
                             byte[] b = Convert.FromBase64String(i);
@@ -247,14 +272,20 @@ namespace Dentista
                             Bitmap bm = new Bitmap(ms, false);
                             ms.Dispose();
 
-                            //pictureBox1.Image = bm;
-                     }
-                    
-
+                        //pictureBox1.Image = bm;
+                        imgs.Images.Add(bm);
+                        //imagenes2.Add(bm);
+                        cont++;
+                       
+                    }
+                    for(int i=1;i<=cont;i++)
+                    {
+                        listView1.SmallImageList = imgs;
+                        listView1.Items.Add("Imagen " + i, cont-i);
+                        
+                    }
                     MessageBox.Show("Registro encontrado");
-                }
-
-
+                }                
             }
             catch (Exception w)
             {
@@ -262,6 +293,7 @@ namespace Dentista
                 MessageBox.Show("Registro no encontrado verifique su busqueda");
 
             }
+
         }
 
         private void Button8_Click(object sender, EventArgs e)
